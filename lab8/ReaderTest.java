@@ -11,7 +11,7 @@ class ReaderTest
 	
 	private int[] testValuesInt = {10, -10, 0, 69420, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE + 1 };
 	private String[] testValuesString = {"1010", "00000000001", "0", null, "", "abc", "103010201", "\"", "\n",
-			"\"10010\"", "I'm great programmer", "1111111111111111111111111111111111111111111111111111111111111" };
+			"\"10010\"", "I'm a great programmer", "1111111111111111111111111111111111111111111111111111111111111" };
 	
 	@Test
 	void ANDIntTest()
