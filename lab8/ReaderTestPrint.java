@@ -2,6 +2,11 @@ package lab8;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
+
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 class ReaderTestPrint
@@ -12,6 +17,25 @@ class ReaderTestPrint
 	private int[] testValuesInt = {10, -10, 0, 69420, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE + 1 };
 	private String[] testValuesString = {"1010", "00000000001", "0", null, "", "abc", "103010201", "\"", "\n",
 			"\"10010\"", "I'm a great programmer", "1111111111111111111111111111111111111111111111111111111111111" };
+	
+	@BeforeAll
+	private static void printSetUp()
+	{
+		
+		PrintStream o = null;
+		try
+		{
+			o = new PrintStream(new File("A.txt"));
+		}
+		catch (FileNotFoundException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.setOut(o);
+		
+	}
+	
 	
 	private void print(String s, Binary exp, Binary act)
 	{
@@ -29,7 +53,7 @@ class ReaderTestPrint
 	void ANDIntTest()
 	{
 		
-		System.out.println("ANDIntTest");
+		System.out.println("\n\n ANDIntTest");
 		for (int x : testValuesInt)
 		{
 			for (int y : testValuesInt)
