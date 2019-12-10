@@ -93,13 +93,4 @@ public class Reader
 		
 	}
 	
-	
-	public static void main(String[] args)
-	{
-		
-		System.out.println(calculator("\"1010\"" + "and" + "10"));
-		System.out.println("change in 2nd commit");
-		
-	}
-	
 }
