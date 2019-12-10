@@ -132,6 +132,7 @@ class ReaderTestPrint
 	void ORStringTest()
 	{
 		
+		System.out.println("\n\n ORStringTest");
 		for (String x : testValuesString)
 		{
 			for (String y : testValuesString)
@@ -140,6 +141,7 @@ class ReaderTestPrint
 				if (y == null || x == null) continue;
 				Binary bn1 = new Binary(x);
 				Binary bn2 = new Binary(y);
+				print(s, Reader.calculator(s), bn1.calcOR(bn2));
 				assertEquals(Reader.calculator(s).toString(), bn1.calcOR(bn2).toString());
 			}
 		}
@@ -151,6 +153,7 @@ class ReaderTestPrint
 	void ORStringIntTest()
 	{
 		
+		System.out.println("\n\n ORStringIntTest");
 		for (String x : testValuesString)
 		{
 			for (int y : testValuesInt)
@@ -159,6 +162,7 @@ class ReaderTestPrint
 				if (x == null) continue;
 				Binary bn1 = new Binary(x);
 				Binary bn2 = new Binary(y);
+				print(s, Reader.calculator(s), bn1.calcOR(bn2));
 				assertEquals(Reader.calculator(s).toString(), bn1.calcOR(bn2).toString());
 			}
 		}
@@ -170,6 +174,7 @@ class ReaderTestPrint
 	void ORIntStringTest()
 	{
 		
+		System.out.println("\n\n ORIntStringTest");
 		for (int x : testValuesInt)
 		{
 			for (String y : testValuesString)
@@ -178,6 +183,7 @@ class ReaderTestPrint
 				if (y == null) continue;
 				Binary bn1 = new Binary(x);
 				Binary bn2 = new Binary(y);
+				print(s, Reader.calculator(s), bn1.calcOR(bn2));
 				assertEquals(Reader.calculator(s).toString(), bn1.calcOR(bn2).toString());
 			}
 		}
@@ -193,11 +199,13 @@ class ReaderTestPrint
 	void XORIntTest()
 	{
 		
+		System.out.println("\n\n XORIntTest");
 		for (int x : testValuesInt)
 		{
 			for (int y : testValuesInt)
 			{
 				String s = x + " xor " + y;
+				print(s, Reader.calculator(s), new Binary(x).calcXOR(y));
 				assertEquals(Reader.calculator(s), new Binary(x).calcXOR(y));
 			}
 		}
@@ -209,6 +217,7 @@ class ReaderTestPrint
 	void XORStringTest()
 	{
 		
+		System.out.println("\n\n XORStringTest");
 		for (String x : testValuesString)
 		{
 			for (String y : testValuesString)
@@ -217,6 +226,7 @@ class ReaderTestPrint
 				if (y == null || x == null) continue;
 				Binary bn1 = new Binary(x);
 				Binary bn2 = new Binary(y);
+				print(s, Reader.calculator(s), bn1.calcXOR(bn2));
 				assertEquals(Reader.calculator(s).toString(), bn1.calcXOR(bn2).toString());
 			}
 		}
@@ -228,6 +238,7 @@ class ReaderTestPrint
 	void XORStringIntTest()
 	{
 		
+		System.out.println("\n\n XORStringIntTest");
 		for (String x : testValuesString)
 		{
 			for (int y : testValuesInt)
@@ -236,6 +247,7 @@ class ReaderTestPrint
 				if (x == null) continue;
 				Binary bn1 = new Binary(x);
 				Binary bn2 = new Binary(y);
+				print(s, Reader.calculator(s), bn1.calcXOR(bn2));
 				assertEquals(Reader.calculator(s).toString(), bn1.calcXOR(bn2).toString());
 			}
 		}
@@ -247,6 +259,7 @@ class ReaderTestPrint
 	void XORIntStringTest()
 	{
 		
+		System.out.println("\n\n XORIntStringTest");
 		for (int x : testValuesInt)
 		{
 			for (String y : testValuesString)
@@ -255,6 +268,7 @@ class ReaderTestPrint
 				if (y == null) continue;
 				Binary bn1 = new Binary(x);
 				Binary bn2 = new Binary(y);
+				print(s, Reader.calculator(s), bn1.calcXOR(bn2));
 				assertEquals(Reader.calculator(s).toString(), bn1.calcXOR(bn2).toString());
 			}
 		}
