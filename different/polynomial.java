@@ -11,8 +11,73 @@ public class polynomial
 	private polynomial(int[] coef, int[] pow)
 	{
 		
-		coeficients = coef;
-		powers = pow;
+		System.out.println("here");
+		
+		if (coef.length == pow.length)
+		{
+			coeficients = coef;
+			powers = pow;
+		}
+		if (coef.length > pow.length)
+		{
+			coeficients = coef;
+			powers = new int[coef.length];
+			for (int x = 0; x < pow.length; x++)
+			{
+				powers[x] = pow[x];
+			}
+		}
+		if (pow.length > coef.length)
+		{
+			powers = pow;
+			coeficients = new int[pow.length];
+			for (int x = 0; x < coeficients.length; x++)
+			{
+				coeficients[x] = 1;
+			}
+			for (int x = 0; x < coef.length; x++)
+			{
+				coeficients[x] = coef[x];
+			}
+		}
+		sort();
+		
+	}
+	
+	
+	private float solveFor(int x)
+	{
+		
+		float sum = 0;
+		for (int y = 0; y < powers.length; y++)
+		{
+			sum += Math.pow(x, powers[y]) * coeficients[y];
+		}
+		return sum;
+		
+	}
+	
+	
+	private void sort()
+	{
+		
+		for (int x = 0; x < powers.length; x++)
+		{
+			for (int y = x; y < powers.length; y++)
+			{
+				if (powers[y] > powers[x])
+				{
+					int temp = powers[x];
+					powers[x] = powers[y];
+					powers[y] = temp;
+					temp = coeficients[x];
+					coeficients[x] = coeficients[y];
+					coeficients[y] = temp;
+					x = 0;
+					y = 0;
+				}
+			}
+		}
 		
 	}
 	
@@ -23,9 +88,13 @@ public class polynomial
 		String returnString = "";
 		for (int x = 0; x < coeficients.length; x++)
 		{
+			if (coeficients[x] == 0) continue;
 			if (coeficients[x] != 1) returnString += coeficients[x];
-			returnString += "x^";
-			returnString += powers[x];
+			if (powers[x] != 0)
+			{
+				returnString += "x";
+				if (powers[x] != 1) returnString += "^" + powers[x];
+			}
 			if (x != coeficients.length - 1) returnString += " + ";
 		}
 		return returnString;
@@ -33,6 +102,7 @@ public class polynomial
 	}
 	
 	
+	// All of below is copied from array class XD
 	public static int[] Input(Scanner scanner)
 	{
 		
@@ -81,7 +151,9 @@ public class polynomial
 	public static void main(String[] args)
 	{
 		
+		System.out.print("Input coeficients: ");
 		int[] coef = Input(new Scanner(System.in));
+		System.out.println("Input powers: ");
 		int[] pow = Input(new Scanner(System.in));
 		polynomial pn = new polynomial(coef, pow);
 		System.out.println(pn);
