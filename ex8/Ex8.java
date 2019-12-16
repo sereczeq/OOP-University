@@ -20,7 +20,7 @@ public class Ex8
 		}
 		catch (PatternSyntaxException ex)
 		{
-			result.add("wrong regex");
+			result.add("Oh, sorry. I don't know what do to with:  " + toFind + ". Please use something else :3");
 			return (result);
 		}
 		Matcher matcher = pattern.matcher(s);
@@ -64,7 +64,7 @@ public class Ex8
 		String name = "[A-Z][a-z]+";
 		String houseNum = "\\d+[A-Z]";
 		String flatNum = "\\d+";
-		String fullAdress = "[\\p{name}]" + "\\s" + name + "\\s" + houseNum + "\\s" + flatNum;
+		String fullAdress = name + "\\s" + name + "\\s" + houseNum + "\\s" + flatNum;
 		s = "Rzeszow Raclawowka 286B 1";
 		System.out.println("full adresses: " + findPattern(s, fullAdress));
 		
