@@ -61,10 +61,10 @@ public class Ex8
 		s = "email@email.com qwe.rty@weqjio.sdajlk.dajk ASlkj.%dajgv@Gmail.Pol";
 		System.out.println("emails: " + findPattern(s, emailAdress, true));
 		
-		String name = "[A-Z][a-z]+";
+		String name = "[A-Z][a-z]+\\s";
 		String houseNum = "\\d+[A-Z]";
 		String flatNum = "\\d+";
-		String fullAdress = name + "\\s" + name + "\\s" + houseNum + "\\s" + flatNum;
+		String fullAdress = name + name + houseNum + "\\s" + flatNum;
 		s = "Rzeszow Raclawowka 286B 1";
 		System.out.println("full adresses: " + findPattern(s, fullAdress));
 		
