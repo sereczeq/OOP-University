@@ -59,7 +59,7 @@ public class polynomial
 	}
 	
 	
-	private String findRoots()
+	private float[] findRoots()
 	{
 		
 		Vector<Float> returnVector = new Vector<Float>();
@@ -75,7 +75,9 @@ public class polynomial
 				}
 			}
 		}
-		return returnVector.toArray().toString();
+		float[] array = returnVector.toArray(new float[returnVector.size()]);
+		
+		return null;
 		
 	}
 	
