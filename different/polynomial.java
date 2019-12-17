@@ -1,15 +1,16 @@
 package different;
 
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.Vector;
 
-public class polynomial
+public class Polynomial
 {
 	
 	private int[] coeficients;
 	private int[] powers;
 	
-	private polynomial(int[] coef, int[] pow)
+	private Polynomial(int[] coef, int[] pow)
 	{
 		
 		System.out.println("here");
@@ -59,7 +60,7 @@ public class polynomial
 	}
 	
 	
-	private float[] findRoots()
+	private String findRoots()
 	{
 		
 		Vector<Float> returnVector = new Vector<Float>();
@@ -75,9 +76,14 @@ public class polynomial
 				}
 			}
 		}
-		float[] array = returnVector.toArray(new float[returnVector.size()]);
+		Float[] array = Arrays.copyOf(returnVector.toArray(), returnVector.toArray().length, Float[].class);
+		String string = "";
 		
-		return null;
+		for (Float x : array)
+		{
+			if (!string.contains(x + " ")) string += x + " ";
+		}
+		return string;
 		
 	}
 	
@@ -85,12 +91,13 @@ public class polynomial
 	private int[] find(int number)
 	{
 		
+		int num = Math.abs(number);
 		int[] returnArray = { };
-		for (int x = 1; x <= number; x++)
+		for (int x = 1; x <= num; x++)
 		{
-			if (number % x == 0)
+			if (num % x == 0)
 			{
-				appendArrays(returnArray, new int[] {x, -x });
+				returnArray = appendArrays(returnArray, new int[] {x, -x });
 			}
 		}
 		return returnArray;
@@ -129,7 +136,7 @@ public class polynomial
 		for (int x = 0; x < coeficients.length; x++)
 		{
 			if (coeficients[x] == 0) continue;
-			if (coeficients[x] != 1) returnString += coeficients[x];
+			if (coeficients[x] != 1 || (coeficients[x] == 1 && powers[x] == 0)) returnString += coeficients[x];
 			if (powers[x] != 0)
 			{
 				returnString += "x";
@@ -193,9 +200,9 @@ public class polynomial
 		
 		System.out.print("Input coeficients: ");
 		int[] coef = Input(new Scanner(System.in));
-		System.out.println("Input powers: ");
+		System.out.print("Input powers: ");
 		int[] pow = Input(new Scanner(System.in));
-		polynomial pn = new polynomial(coef, pow);
+		Polynomial pn = new Polynomial(coef, pow);
 		System.out.println(pn);
 		System.out.println(pn.findRoots());
 		
