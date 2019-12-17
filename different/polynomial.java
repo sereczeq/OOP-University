@@ -1,6 +1,7 @@
 package different;
 
 import java.util.Scanner;
+import java.util.Vector;
 
 public class polynomial
 {
@@ -54,6 +55,43 @@ public class polynomial
 			sum += Math.pow(x, powers[y]) * coeficients[y];
 		}
 		return sum;
+		
+	}
+	
+	
+	private String findRoots()
+	{
+		
+		Vector<Float> returnVector = new Vector<Float>();
+		int[] top = find(coeficients[coeficients.length - 1]);
+		int[] bot = find(coeficients[0]);
+		for (int x : top)
+		{
+			for (int y : bot)
+			{
+				if (solveFor(x / y) == 0)
+				{
+					returnVector.add((float) (x / y));
+				}
+			}
+		}
+		return returnVector.toArray().toString();
+		
+	}
+	
+	
+	private int[] find(int number)
+	{
+		
+		int[] returnArray = { };
+		for (int x = 1; x <= number; x++)
+		{
+			if (number % x == 0)
+			{
+				appendArrays(returnArray, new int[] {x, -x });
+			}
+		}
+		return returnArray;
 		
 	}
 	
@@ -157,6 +195,7 @@ public class polynomial
 		int[] pow = Input(new Scanner(System.in));
 		polynomial pn = new polynomial(coef, pow);
 		System.out.println(pn);
+		System.out.println(pn.findRoots());
 		
 	}
 	
