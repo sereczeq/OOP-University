@@ -21,7 +21,7 @@ class ReaderTest
 		{
 			for (int y : testValuesInt)
 			{
-				String s = x + " and " + y;
+				String s = x + " && " + y;
 				assertEquals(Reader.calculator(s), new Binary(x).calcAND(y));
 			}
 		}
@@ -37,7 +37,7 @@ class ReaderTest
 		{
 			for (String y : testValuesString)
 			{
-				String s = "\"" + x + "\"" + " and " + "\"" + y + "\"";
+				String s = "\"" + x + "\"" + " && " + "\"" + y + "\"";
 				if (y == null || x == null) continue;
 				Binary bn1 = new Binary(x);
 				Binary bn2 = new Binary(y);
@@ -56,7 +56,7 @@ class ReaderTest
 		{
 			for (int y : testValuesInt)
 			{
-				String s = "\"" + x + "\"" + " and " + y;
+				String s = "\"" + x + "\"" + " && " + y;
 				if (x == null) continue;
 				Binary bn1 = new Binary(x);
 				Binary bn2 = new Binary(y);
@@ -75,7 +75,7 @@ class ReaderTest
 		{
 			for (String y : testValuesString)
 			{
-				String s = x + " and " + "\"" + y + "\"";
+				String s = x + " &&" + "\"" + y + "\"";
 				if (y == null) continue;
 				Binary bn1 = new Binary(x);
 				Binary bn2 = new Binary(y);
@@ -98,7 +98,7 @@ class ReaderTest
 		{
 			for (int y : testValuesInt)
 			{
-				String s = x + " or " + y;
+				String s = x + " || " + y;
 				assertEquals(Reader.calculator(s), new Binary(x).calcOR(y));
 			}
 		}
@@ -114,7 +114,7 @@ class ReaderTest
 		{
 			for (String y : testValuesString)
 			{
-				String s = "\"" + x + "\"" + " or " + "\"" + y + "\"";
+				String s = "\"" + x + "\"" + " || " + "\"" + y + "\"";
 				if (y == null || x == null) continue;
 				Binary bn1 = new Binary(x);
 				Binary bn2 = new Binary(y);
@@ -133,7 +133,7 @@ class ReaderTest
 		{
 			for (int y : testValuesInt)
 			{
-				String s = "\"" + x + "\"" + " or " + y;
+				String s = "\"" + x + "\"" + " || " + y;
 				if (x == null) continue;
 				Binary bn1 = new Binary(x);
 				Binary bn2 = new Binary(y);
@@ -152,7 +152,7 @@ class ReaderTest
 		{
 			for (String y : testValuesString)
 			{
-				String s = x + " or " + "\"" + y + "\"";
+				String s = x + " || " + "\"" + y + "\"";
 				if (y == null) continue;
 				Binary bn1 = new Binary(x);
 				Binary bn2 = new Binary(y);
@@ -175,7 +175,7 @@ class ReaderTest
 		{
 			for (int y : testValuesInt)
 			{
-				String s = x + " xor " + y;
+				String s = x + " ^ " + y;
 				assertEquals(Reader.calculator(s), new Binary(x).calcXOR(y));
 			}
 		}
@@ -191,7 +191,7 @@ class ReaderTest
 		{
 			for (String y : testValuesString)
 			{
-				String s = "\"" + x + "\"" + " xor " + "\"" + y + "\"";
+				String s = "\"" + x + "\"" + " ^ " + "\"" + y + "\"";
 				if (y == null || x == null) continue;
 				Binary bn1 = new Binary(x);
 				Binary bn2 = new Binary(y);
@@ -210,7 +210,7 @@ class ReaderTest
 		{
 			for (int y : testValuesInt)
 			{
-				String s = "\"" + x + "\"" + " xor " + y;
+				String s = "\"" + x + "\"" + " ^ " + y;
 				if (x == null) continue;
 				Binary bn1 = new Binary(x);
 				Binary bn2 = new Binary(y);
@@ -229,7 +229,7 @@ class ReaderTest
 		{
 			for (String y : testValuesString)
 			{
-				String s = x + " xor " + "\"" + y + "\"";
+				String s = x + " ^ " + "\"" + y + "\"";
 				if (y == null) continue;
 				Binary bn1 = new Binary(x);
 				Binary bn2 = new Binary(y);
