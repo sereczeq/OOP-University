@@ -69,28 +69,36 @@ public class Reader
 		
 		line = line.trim();
 		
-		String exp = "and";
+		String exp = "&&";
 		if (line.contains(exp))
 		{
 			int[] array = stringToNumbers(line.split(exp));
 			if (array != null) return new Binary(array[0]).calcAND(new Binary(array[1]));
 		}
 		
-		exp = "or";
+		exp = "||";
 		if (line.contains(exp) && !line.contains("xor"))
 		{
-			int[] array = stringToNumbers(line.split(exp));
+			int[] array = stringToNumbers(line.split("\\|\\|"));
 			if (array != null) return new Binary(array[0]).calcOR(new Binary(array[1]));
 		}
 		
-		exp = "xor";
+		exp = "^";
 		if (line.contains(exp))
 		{
-			int[] array = stringToNumbers(line.split(exp));
+			int[] array = stringToNumbers(line.split("\\^"));
 			if (array != null) return new Binary(array[0]).calcXOR(new Binary(array[1]));
 		}
 		
 		return new Binary(0);
+		
+	}
+	
+	
+	public static void main(String[] args)
+	{
+		
+		System.out.println(calculator("10 ^ 10"));
 		
 	}
 	
