@@ -2,6 +2,7 @@ package lab8;
 
 public class Reader
 {
+	// TODO: change that for ||
 	
 	private static int binaryStringToNumber(String binary)
 	{
