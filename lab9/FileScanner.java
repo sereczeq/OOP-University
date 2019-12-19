@@ -18,8 +18,8 @@ public class FileScanner
 	private String regex;
 	private String[] string;
 	
-	private final String fileRegex = "File:\\s[A-Za-z\\\\.:]+.txt";
-	private final String regexRegex = "Regex:\\s.+";
+	private final String fileRegex = "^File:\\s[A-Za-z\\\\.:]+.txt$";
+	private final String regexRegex = "^Regex:\\s.+";
 	
 	public void execution()
 	{
@@ -29,60 +29,29 @@ public class FileScanner
 		Scanner scanner = new Scanner(System.in);
 		while (scanner.hasNextLine())
 		{
-			System.out.println("awaiting input");
 			String input = scanner.nextLine();
+			
 			if (input.contains("Exit"))
 			{
 				System.out.println("program closed");
 				break;
 			}
 			
-			if (isPattern("^Help$", input))
-			{
-				System.out.println("to exit program type: Exit\n" + "to input a file type: File: file_path\n"
-						+ "to list lines from file type: List\n" + "to search for an expression:\n"
-						+ "  1) specify expression you want to find by typing: Regex: expression\n"
-						+ "  2) type: Search");
-			}
-			else if (isPattern(fileRegex, input))
-			{
-				string = fileToArray(input);
-			}
-			else if (string == null)
-			{
-				System.out.println("No file given");
-				continue;
-			}
-			else if (isPattern(regexRegex, input))
-			{
-				regex = input.split("Regex: ")[1];
-			}
-			else if (isPattern("^Search$", input))
-			{
-				if (regex == null) System.out.println("sorry, no regex to look for");
-				for (int x = 0; x < string.length; x++)
-				{
-					if (isPattern(regex, string[x]))
-					{
-						System.out.println("[" + x + "]" + " " + string[x]);
-					}
-				}
-			}
-			else if (isPattern("^List$", input))
-			{
-				for (int x = 0; x < string.length; x++)
-				{
-					System.out.println("[" + x + "]" + " " + string[x]);
-				}
-			}
+			if (isPattern("^Help$", input)) help();
+			else if (isPattern(fileRegex, input)) fileToArray(input);
+			else if (string == null) System.out.println("No file given");
+			else if (isPattern(regexRegex, input)) addRegex(input);
+			else if (isPattern("^Search$", input)) search();
+			else if (isPattern("^List$", input)) list();
 			else System.out.println("sorry, command unrecognized");
+			System.out.println("awaiting input");
 			
 		}
 		
 	}
 	
 	
-	private String[] fileToArray(String input)
+	private void fileToArray(String input)
 	{
 		
 		FileReader fileReader = null;
@@ -93,6 +62,7 @@ public class FileScanner
 		catch (FileNotFoundException ex)
 		{
 			System.err.println("wrong file path");
+			return;
 		}
 		
 		List<String> list = new ArrayList<String>();
@@ -108,8 +78,103 @@ public class FileScanner
 		catch (IOException e)
 		{
 			System.err.println("IOException in bufferer");
+			try
+			{
+				buf.close();
+			}
+			catch (IOException e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			return;
 		}
-		return list.toArray(new String[] { });
+		try
+		{
+			buf.close();
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		string = list.toArray(new String[] { });
+		
+	}
+	
+	
+	private void help()
+	{
+		
+		System.out.println("to exit program type: Exit\n" + "to input a file type: File: file_path\n"
+				+ "to list lines from file type: List\n" + "to search for an expression:\n"
+				+ "  1) specify expression you want to find by typing: Regex: expression\n" + "  2) type: Search");
+		
+	}
+	
+	
+	private void addRegex(String input)
+	{
+		
+		regex = input.split("Regex: ")[1];
+		System.out.println("regex " + regex + " added succesfully");
+		
+	}
+	
+	
+	private void search()
+	{
+		
+		boolean found = false;
+		if (regex == null)
+		{
+			System.out.println("sorry, no regex to look for");
+			return;
+		}
+		for (int x = 0; x < string.length; x++)
+		{
+			if (isPattern(regex, string[x]))
+			{
+				Pattern pattern = null;
+				try
+				{
+					pattern = Pattern.compile(regex);
+				}
+				catch (PatternSyntaxException ex)
+				{
+					System.err.println("pattern " + regex + " couldn't be compiled");
+				}
+				Matcher matcher = pattern.matcher(string[x]);
+				
+				String outputString = "[" + x + "]" + " ";
+				boolean matcherFound = false;
+				while (matcher.find())
+				{
+					if (!matcherFound) outputString += "{";
+					else outputString += ", ";
+					matcherFound = true;
+					outputString += matcher.group();
+				}
+				if (matcherFound) outputString += "} ";
+				
+				outputString += string[x];
+				
+				System.out.println(outputString);
+				found = true;
+			}
+		}
+		if (!found) System.out.println("no regex in the file");
+		
+	}
+	
+	
+	private void list()
+	{
+		
+		for (int x = 0; x < string.length; x++)
+		{
+			System.out.println("[" + x + "]" + " " + string[x]);
+		}
 		
 	}
 	
