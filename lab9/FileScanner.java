@@ -15,7 +15,7 @@ public class FileScanner
 {
 	
 	// File: D:\.Moje\Workspace\code\A.txt
-	private String regex;
+	private Pattern regex;
 	private String[] string;
 	
 	private final String fileRegex = "^File:\\s[A-Za-z\\\\.:]+.txt$";
@@ -31,22 +31,20 @@ public class FileScanner
 		{
 			String input = scanner.nextLine();
 			
-			if (input.contains("Exit"))
-			{
-				System.out.println("program closed");
-				break;
-			}
-			
-			if (isPattern("^Help$", input)) help();
+			if (isPattern("[Ee]xit", input)) break;
+			else if (isPattern("^[Hh]elp$", input)) help();
 			else if (isPattern(fileRegex, input)) fileToArray(input);
-			else if (string == null) System.out.println("No file given");
 			else if (isPattern(regexRegex, input)) addRegex(input);
+			else if (string == null) System.out.println("No file given"); // can't search or list if there's no file
 			else if (isPattern("^Search$", input)) search();
 			else if (isPattern("^List$", input)) list();
 			else System.out.println("sorry, command unrecognized");
 			System.out.println("awaiting input");
 			
 		}
+		
+		System.out.println("program closed");
+		scanner.close();
 		
 	}
 	
@@ -84,8 +82,7 @@ public class FileScanner
 			}
 			catch (IOException e1)
 			{
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				System.err.println("bufferer couldn'y be closed");
 			}
 			return;
 		}
@@ -95,8 +92,7 @@ public class FileScanner
 		}
 		catch (IOException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.err.println("bufferer couldn'y be closed");
 		}
 		string = list.toArray(new String[] { });
 		
@@ -116,8 +112,15 @@ public class FileScanner
 	private void addRegex(String input)
 	{
 		
-		regex = input.split("Regex: ")[1];
-		System.out.println("regex " + regex + " added succesfully");
+		try
+		{
+			regex = Pattern.compile(input.split("Regex: ")[1]);
+			System.out.println("regex " + regex + " added succesfully");
+		}
+		catch (PatternSyntaxException ex)
+		{
+			System.err.println("pattern " + input.split("Regex: ")[1] + " couldn't be compiled");
+		}
 		
 	}
 	
@@ -126,6 +129,7 @@ public class FileScanner
 	{
 		
 		boolean found = false;
+		boolean foundAny = false;
 		if (regex == null)
 		{
 			System.out.println("sorry, no regex to look for");
@@ -133,37 +137,28 @@ public class FileScanner
 		}
 		for (int x = 0; x < string.length; x++)
 		{
-			if (isPattern(regex, string[x]))
+			found = false;
+			Matcher matcher = regex.matcher(string[x]);
+			String outputString = "";
+			while (matcher.find())
 			{
-				Pattern pattern = null;
-				try
+				if (!found)
 				{
-					pattern = Pattern.compile(regex);
+					outputString = "[" + x + "]" + " {";
 				}
-				catch (PatternSyntaxException ex)
-				{
-					System.err.println("pattern " + regex + " couldn't be compiled");
-				}
-				Matcher matcher = pattern.matcher(string[x]);
-				
-				String outputString = "[" + x + "]" + " ";
-				boolean matcherFound = false;
-				while (matcher.find())
-				{
-					if (!matcherFound) outputString += "{";
-					else outputString += ", ";
-					matcherFound = true;
-					outputString += matcher.group();
-				}
-				if (matcherFound) outputString += "} ";
-				
-				outputString += string[x];
-				
-				System.out.println(outputString);
+				else outputString += ", ";
 				found = true;
+				foundAny = true;
+				outputString += matcher.group();
 			}
+			if (found)
+			{
+				outputString += "} " + string[x];
+				System.out.println(outputString);
+			}
+			
 		}
-		if (!found) System.out.println("no regex in the file");
+		if (!foundAny) System.out.println("no regex in the file");
 		
 	}
 	
@@ -190,6 +185,7 @@ public class FileScanner
 		catch (PatternSyntaxException ex)
 		{
 			System.err.println("pattern " + regex + " couldn't be compiled");
+			return false;
 		}
 		Matcher matcher = pattern.matcher(string);
 		if (matcher.find()) return true;

@@ -114,6 +114,8 @@ public class ArrayList4
 	public static int[] getLessThan(int[] arr, int limit, int index)
 	{
 		
+		if (index >= arr.length) return null;
+		
 		if (arr[index] < limit) return appendArrays(new int[] {arr[index] }, getLessThan(arr, limit, index + 1));
 		return appendArrays(null, getLessThan(arr, limit, index + 1));
 		

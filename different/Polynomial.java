@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Scanner;
 import java.util.Vector;
 
+import lab.ArrayList4;
+
 public class Polynomial
 {
 	
@@ -42,6 +44,7 @@ public class Polynomial
 				coeficients[x] = coef[x];
 			}
 		}
+		sum();
 		sort();
 		
 	}
@@ -97,7 +100,7 @@ public class Polynomial
 		{
 			if (num % x == 0)
 			{
-				returnArray = appendArrays(returnArray, new int[] {x, -x });
+				returnArray = ArrayList4.appendArrays(returnArray, new int[] {x, -x });
 			}
 		}
 		return returnArray;
@@ -129,6 +132,25 @@ public class Polynomial
 	}
 	
 	
+	private void sum()
+	{
+		
+		for (int x = 0; x < powers.length; x++)
+		{
+			for (int y = x + 1; y < powers.length; y++)
+			{
+				if (powers[x] == powers[y])
+				{
+					coeficients[x] += coeficients[y];
+					powers[y] = 0;
+					coeficients[y] = 0;
+				}
+			}
+		}
+		
+	}
+	
+	
 	public String toString()
 	{
 		
@@ -142,7 +164,7 @@ public class Polynomial
 				returnString += "x";
 				if (powers[x] != 1) returnString += "^" + powers[x];
 			}
-			if (x != coeficients.length - 1) returnString += " + ";
+			if (x != coeficients.length - 1 && coeficients[x + 1] != 0) returnString += " + ";
 		}
 		return returnString;
 		
@@ -158,39 +180,7 @@ public class Polynomial
 			if (scanner.next().contentEquals("^Z")) return null;
 		}
 		
-		return appendArrays(new int[] {scanner.nextInt() }, Input(scanner));
-		
-	}
-	
-	
-	public static int[] appendArrays(int[] arr1, int[] arr2)
-	{
-		
-		if (notArray("appendArrays", arr1) && !notArray("appendArrays", arr2)) return arr2;
-		else if (notArray("appendArrays", arr2) && !notArray("appendArrays", arr1)) return arr1;
-		else if (notArray("appendArrays", arr1) && notArray("appendArrays", arr2)) return new int[] { };
-		
-		if (arr1 == null || arr1.length == 0) return arr2;
-		if (arr2 == null || arr2.length == 0) return arr1;
-		
-		int[] array = new int[arr1.length + arr2.length];
-		
-		for (int x = 0; x < arr1.length + arr2.length; x++)
-		{
-			if (x < arr1.length) array[x] = arr1[x];
-			else array[x] = arr2[x - arr1.length];
-		}
-		
-		return array;
-		
-	}
-	
-	
-	public static boolean notArray(String name, int[] arr)
-	{
-		
-		if (arr == null || arr.length == 0) return true;
-		return false;
+		return ArrayList4.appendArrays(new int[] {scanner.nextInt() }, Input(scanner));
 		
 	}
 	
