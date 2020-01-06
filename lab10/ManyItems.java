@@ -270,7 +270,7 @@ public class ManyItems
 	public static void main(String[] args)
 	{
 		
-		if (args != null && args[0] != null && args[1] != null)
+		if (args != null && args.length == 2 && args[0] != null && args[1] != null)
 		{
 			ManyItems manyItems = new ManyItems();
 			manyItems.Execution(args[0], args[1]);
