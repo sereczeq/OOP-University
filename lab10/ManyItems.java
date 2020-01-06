@@ -111,7 +111,11 @@ public class ManyItems
 			currentItemString = matcher.group().split("\\s");
 			return true;
 		}
-		else return false;
+		else
+		{
+			rejectedCount++;
+			return false;
+		}
 		
 	}
 	
@@ -119,7 +123,12 @@ public class ManyItems
 	private boolean isQuantityProper()
 	{
 		
-		return !currentItemString[2].contains("-");
+		if (currentItemString[2].contains("-"))
+		{
+			rejectedCount++;
+			return false;
+		}
+		else return true;
 		
 	}
 	
@@ -231,7 +240,7 @@ public class ManyItems
 	}
 	
 	
-	private boolean isPattern(String regex, String string)
+	private boolean isPattern(String string, String regex)
 	{
 		
 		Pattern pattern = null;
@@ -251,17 +260,26 @@ public class ManyItems
 	}
 	
 	
-	private void Execution(String file, String command)
+	private void Execution(String file, String string)
 	{
 		
-		if (isPattern(file, "^File:\\s[A-Za-z\\\\.:]+.txt$")) addItemsFromFile(file);
-		else System.out.println("no file given");
+		if (isPattern(file, "^[A-Za-z\\\\.:]+.txt$")) addItemsFromFile(file);
+		else
+		{
+			System.out.println("no file given");
+			return;
+		}
 		
-		if (isPattern(command, "^type&")) sortByType();
-		else if (isPattern(command, "^weight&")) sortByWeight();
-		else if (isPattern(command, "^quality&")) sortByQualityAndWeight();
-		else if (isPattern(command, "^errors&")) System.out.println(getErrorNumber());
-		else if (isPattern(command, "^sieze$")) System.out.println(getSize());
+		String[] commands = string.split(",");
+		for (String command : commands)
+		{
+			if (isPattern(command, "^type$")) sortByType();
+			else if (isPattern(command, "^weight$")) sortByWeight();
+			else if (isPattern(command, "^quality$")) sortByQualityAndWeight();
+			else if (isPattern(command, "^errors$")) System.out.println(getErrorNumber());
+			else if (isPattern(command, "^size$")) System.out.println(getSize());
+			else System.out.println("Command not recognized");
+		}
 		
 	}
 	
@@ -275,16 +293,7 @@ public class ManyItems
 			ManyItems manyItems = new ManyItems();
 			manyItems.Execution(args[0], args[1]);
 		}
-		
-		// ManyItems m = new ManyItems();
-		// m.addItem("Tea 2.4 5 \"Good quality\"");
-		// m.addItem("Bread 1 1 \"good bread\"");
-		// m.addItem("Milk 12.5 32 \"old milk but drinkable\"");
-		// m.addItem("dsjkl");
-		// System.out.println(m.isItem("Tea 2.4 5 \"Good quality\""));
-		// System.out.println(m.isQuantityProper());
-		// m.sortByType();
-		// // m.showData();
+		else System.out.println("Wrong number of arguments");
 		
 	}
 	
