@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -95,8 +97,10 @@ public class ManyItems
 	}
 	
 	
-	public boolean isItem(String line)
+	private boolean isItem(String line)
 	{
+		
+		if (line == null) return false;
 		
 		String string = "^(Bread|Milk|Tea|Butter|Other)\\s\\d+(\\.\\d+)?\\s[+-]?\\d+\\s\"[A-Za-z0-9\\s]+\"$";
 		Pattern regex = Pattern.compile(string);
@@ -111,7 +115,7 @@ public class ManyItems
 	}
 	
 	
-	public boolean isQuantityProper()
+	private boolean isQuantityProper()
 	{
 		
 		return !currentItemString[2].contains("-");
@@ -119,17 +123,29 @@ public class ManyItems
 	}
 	
 	
-	public ItemW stringToItem()
+	private ItemW stringToItem()
 	{
 		
 		String[] s = currentItemString;
+		
+		// because of splitting, the comment ends up as different strings, here I am
+		// connecting them back
 		String comment = "";
 		for (int x = 3; x < s.length; x++)
 		{
 			comment += s[x] + " ";
 		}
+		
 		ItemW item = new ItemW(ProductType.fromString(s[0]), Integer.parseInt(s[2]), comment, Float.parseFloat(s[1]));
 		return item;
+		
+	}
+	
+	
+	public int getSize()
+	{
+		
+		return data.size();
 		
 	}
 	
@@ -142,9 +158,70 @@ public class ManyItems
 	}
 	
 	
-	// public void sortByWeight()
-	// public void sortByType()
-	// public void sortByQualityAndWeight()
+	public void sortByWeight()
+	{
+		
+		Collections.sort(data, new Comparator<ItemW>()
+		{
+			
+			@Override
+			public int compare(ItemW one, ItemW two)
+			{
+				
+				return (int) (one.weight - two.weight);
+				
+			}
+			
+		});
+		showData();
+		
+	}
+	
+	
+	public void sortByType()
+	{
+		
+		Collections.sort(data, new Comparator<ItemW>()
+		{
+			
+			@Override
+			public int compare(ItemW one, ItemW two)
+			{
+				
+				return one.getType().compareTo(two.getType());
+				
+			}
+			
+		});
+		showData();
+		
+	}
+	
+	
+	public void sortByQualityAndWeight()
+	{
+		
+		Collections.sort(data, new Comparator<ItemW>()
+		{
+			
+			@Override
+			public int compare(ItemW one, ItemW two)
+			{
+				
+				if (one.getComment() == two.getComment())
+				{
+					return (int) (one.weight - two.weight);
+				}
+				else return one.getComment().compareTo(two.getComment());
+				
+			}
+			
+		});
+		showData();
+		
+	}
+	
+	
 	public void showData()
 	{
 		
@@ -163,7 +240,8 @@ public class ManyItems
 		m.addItem("dsjkl");
 		System.out.println(m.isItem("Tea 2.4 5 \"Good quality\""));
 		System.out.println(m.isQuantityProper());
-		m.showData();
+		m.sortByType();
+		// m.showData();
 		
 	}
 	
