@@ -9,6 +9,7 @@ import java.util.Comparator;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import lab.lab6Task1Enum.ProductType;
 
@@ -230,18 +231,60 @@ public class ManyItems
 	}
 	
 	
+	private boolean isPattern(String regex, String string)
+	{
+		
+		Pattern pattern = null;
+		try
+		{
+			pattern = Pattern.compile(regex);
+		}
+		catch (PatternSyntaxException ex)
+		{
+			System.err.println("pattern " + regex + " couldn't be compiled");
+			return false;
+		}
+		Matcher matcher = pattern.matcher(string);
+		if (matcher.find()) return true;
+		return false;
+		
+	}
+	
+	
+	private void Execution(String file, String command)
+	{
+		
+		if (isPattern(file, "^File:\\s[A-Za-z\\\\.:]+.txt$")) addItemsFromFile(file);
+		else System.out.println("no file given");
+		
+		if (isPattern(command, "^type&")) sortByType();
+		else if (isPattern(command, "^weight&")) sortByWeight();
+		else if (isPattern(command, "^quality&")) sortByQualityAndWeight();
+		else if (isPattern(command, "^errors&")) System.out.println(getErrorNumber());
+		else if (isPattern(command, "^sieze$")) System.out.println(getSize());
+		
+	}
+	
+	
+	// File: D:\.Moje\Workspace\code\B.txt
 	public static void main(String[] args)
 	{
 		
-		ManyItems m = new ManyItems();
-		m.addItem("Tea 2.4 5 \"Good quality\"");
-		m.addItem("Bread 1 1 \"good bread\"");
-		m.addItem("Milk 12.5 32 \"old milk but drinkable\"");
-		m.addItem("dsjkl");
-		System.out.println(m.isItem("Tea 2.4 5 \"Good quality\""));
-		System.out.println(m.isQuantityProper());
-		m.sortByType();
-		// m.showData();
+		if (args != null && args[0] != null && args[1] != null)
+		{
+			ManyItems manyItems = new ManyItems();
+			manyItems.Execution(args[0], args[1]);
+		}
+		
+		// ManyItems m = new ManyItems();
+		// m.addItem("Tea 2.4 5 \"Good quality\"");
+		// m.addItem("Bread 1 1 \"good bread\"");
+		// m.addItem("Milk 12.5 32 \"old milk but drinkable\"");
+		// m.addItem("dsjkl");
+		// System.out.println(m.isItem("Tea 2.4 5 \"Good quality\""));
+		// System.out.println(m.isQuantityProper());
+		// m.sortByType();
+		// // m.showData();
 		
 	}
 	
