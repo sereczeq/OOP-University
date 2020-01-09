@@ -1,6 +1,7 @@
 package lab9;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -65,6 +66,20 @@ class FileScannerTest
 	
 	
 	@Test
+	void testProper()
+	{
+		
+		FileScanner f = new FileScanner();
+		Sinn(file + "\nRegex: abc" + "\nSearch");
+		f.execution();
+		assertEquals(Sout("awaiting input\r\n" + "regex abc added succesfully\r\n" + "awaiting input\r\n"
+				+ "[1] {abc, abc, abc, abc} daghjkabchaskgdaabcakjdl asdjkhabc ajjabcjka\r\n" + "awaiting input"),
+				outContent.toString());
+		
+	}
+	
+	
+	@Test
 	void testFile()
 	{
 		
@@ -81,9 +96,91 @@ class FileScannerTest
 	{
 		
 		FileScanner f = new FileScanner();
-		Sinn(file + ".exe");
+		Sinn("File: D:\\\\.Moje\\\\Workspace\\\\code\\\\A.exe");
 		f.execution();
 		assertEquals(Sout("No file given\r\n" + "awaiting input"), outContent.toString());
+		
+	}
+	
+	
+	@Test
+	void testFileDNE()
+	{
+		
+		FileScanner f = new FileScanner();
+		Sinn("File: D:\\.Moje\\Workspace\\code\\FileDNE.txt");
+		f.execution();
+		assertEquals("wrong file path\r\n", errContent.toString());
+		
+	}
+	
+	
+	@Test
+	void testCommandUnrecognized()
+	{
+		
+		FileScanner f = new FileScanner();
+		String[] commands = {"regex", "a", null, "\\\\", "\n" }; // empty string "" doesn't work
+		for (String c : commands)
+		{
+			Sinn(file + "\n" + c);
+			f.execution();
+			assertEquals(Sout("awaiting input\r\n" + "sorry, command unrecognized\r\n" + "awaiting input"),
+					outContent.toString());
+			outContent.reset();
+		}
+		
+	}
+	
+	
+	@Test
+	void testCommandRecognition()
+	{
+		
+		FileScanner f = new FileScanner();
+		String[] commands = {"Regex: regex", "Search", "Help", "help", "List", "exit", "Exit" };
+		for (String c : commands)
+		{
+			Sinn(file + "\n" + c);
+			assertFalse(outContent.toString().contains("sorry, command unrecognized"));
+		}
+		
+	}
+	
+	
+	@Test
+	void testRegexRecognitionCorrect()
+	{
+		
+		FileScanner f = new FileScanner();
+		String[] commands = {"Regex: regex", "Regex: abc", "Regex: a\b/b", "Regex: \\\\" };
+		for (String c : commands)
+		{
+			Sinn(file + "\n" + c);
+			f.execution();
+			assertEquals(Sout("awaiting input\r\n" + "regex " + c.split("Regex: ")[1] + " added succesfully\r\n"
+					+ "awaiting input"), outContent.toString());
+			outContent.reset();
+		}
+		
+	}
+	
+	
+	@Test
+	void testSearchIncorrect()
+	{
+		
+		FileScanner f = new FileScanner();
+		String[] commands = {"shagk", "12345", "oiluktyjfg" };
+		for (String c : commands)
+		{
+			Sinn(file + "\n" + "Regex: " + c + "\nSearch");
+			f.execution();
+			assertEquals(Sout("awaiting input\r\n" + "regex " + c + " added succesfully\r\n" + "awaiting input\r\n"
+					+ "no regex in the file\r\n" + "awaiting input" + ""), outContent.toString());
+			outContent.reset();
+			
+		}
 		
 	}
 	
