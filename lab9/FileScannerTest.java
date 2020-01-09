@@ -142,6 +142,7 @@ class FileScannerTest
 		for (String c : commands)
 		{
 			Sinn(file + "\n" + c);
+			f.execution();
 			assertFalse(outContent.toString().contains("sorry, command unrecognized"));
 		}
 		

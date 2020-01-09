@@ -15,10 +15,11 @@ public class FileScanner
 {
 	
 	// File: D:\.Moje\Workspace\code\A.txt
+	// File: D:\.Moje\Workspace\code\lab9.txt
 	private Pattern regex;
 	private String[] string;
 	
-	private final String fileRegex = "^File:\\s[A-Za-z\\\\.:]+.txt$";
+	private final String fileRegex = "^File:\\s[A-Za-z0-9\\\\.:]+.txt$";
 	private final String regexRegex = "^Regex:\\s.+";
 	
 	public void execution()
