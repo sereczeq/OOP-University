@@ -19,6 +19,8 @@ class ManyItemsTest
 	private static final PrintStream originalErr = System.err;
 	private static final InputStream oryginalIn = System.in;
 	
+	private final String file = "D:\\.Moje\\Workspace\\code\\B.txt";
+	
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception
 	{
@@ -45,12 +47,22 @@ class ManyItemsTest
 	void test()
 	{
 		
-		ManyItems.main(new String[] {"D:\\.Moje\\Workspace\\code\\B.txt", "type" });
+		ManyItems.main(new String[] {file, "type" });
 		String s = "bread [3.5] quantity: 3, comment: \"This is normal\"  weight: 1.5\r\n"
 				+ "milk [2.2] quantity: 1, comment: \"This is good\"  weight: 5.0\r\n"
 				+ "tea [15.0] quantity: 5, comment: \"This is good\"  weight: 2.4\r\n"
 				+ "tea [15.0] quantity: 3, comment: \"This is excellent\"  weight: 1.0\r\n";
 		assertEquals(s, outContent.toString());
+		
+	}
+	
+	
+	@Test
+	void testErrorTest()
+	{
+		
+		ManyItems.main(new String[] {file, "errors" });
+		assertEquals("2", outContent.toString());
 		
 	}
 	
