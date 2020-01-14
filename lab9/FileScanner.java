@@ -1,9 +1,7 @@
 package lab9;
 
-import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -53,48 +51,22 @@ public class FileScanner
 	private void fileToArray(String input)
 	{
 		
-		FileReader fileReader = null;
+		Scanner scanner = null;
 		try
 		{
-			fileReader = new FileReader(input.split("File: ")[1]);
+			scanner = new Scanner(new File(input.split("File: ")[1]));
 		}
-		catch (FileNotFoundException ex)
+		catch (FileNotFoundException e)
 		{
-			System.err.println("wrong file path");
+			System.err.println("sorry, file not found");
 			return;
 		}
-		
 		List<String> list = new ArrayList<String>();
-		BufferedReader buf = new BufferedReader(fileReader);
-		String line;
-		try
+		while (scanner.hasNextLine())
 		{
-			while ((line = buf.readLine()) != null)
-			{
-				list.add(line);
-			}
+			list.add(scanner.nextLine());
 		}
-		catch (IOException e)
-		{
-			System.err.println("IOException in bufferer");
-			try
-			{
-				buf.close();
-			}
-			catch (IOException e1)
-			{
-				System.err.println("bufferer couldn'y be closed");
-			}
-			return;
-		}
-		try
-		{
-			buf.close();
-		}
-		catch (IOException e)
-		{
-			System.err.println("bufferer couldn'y be closed");
-		}
+		scanner.close();
 		string = list.toArray(new String[] { });
 		
 	}

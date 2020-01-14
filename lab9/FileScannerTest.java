@@ -110,7 +110,7 @@ class FileScannerTest
 		FileScanner f = new FileScanner();
 		Sinn("File: D:\\.Moje\\Workspace\\code\\FileDNE.txt");
 		f.execution();
-		assertEquals("wrong file path\r\n", errContent.toString());
+		assertEquals("sorry, file not found\r\n", errContent.toString());
 		
 	}
 	
