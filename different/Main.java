@@ -1,10 +1,12 @@
 package different;
 
+import java.math.BigInteger;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
 interface IWithName
 {
@@ -44,15 +46,15 @@ interface IList<E> extends Iterable<E>
 	
 }
 
-class HashTable
+class HashTable<E>
 {
 	
 	LinkedList arr[]; // use pure array
 	private final static int defaultInitSize = 8;
 	private final static double defaultMaxLoadFactor = 0.7;
 	private int size;
+	private int elemAmount;
 	private final double maxLoadFactor;
-	private int numElements;
 	
 	public HashTable()
 	{
@@ -73,24 +75,17 @@ class HashTable
 	public HashTable(int initCapacity, double maxLF)
 	{
 		
+		// TODO
+		this.arr = new LinkedList[size];
 		this.size = initCapacity;
 		this.maxLoadFactor = maxLF;
-		arr = new LinkedList[size];
-		for (int i = 0; i < arr.length; i++)
+		
+		int x = 0;
+		while (x < initCapacity)
 		{
-			arr[i] = new LinkedList<>();
+			arr[x] = new LinkedList<E>();
+			x++;
 		}
-		numElements = 1;
-		
-	}
-	
-	
-	private int hashValue(int hc, int sz)
-	{
-		
-		if (hc < 0) return hc % sz + sz;
-		else return hc % sz;
-		// return (hc & 0x7fffffff) % sz;
 		
 	}
 	
@@ -98,64 +93,47 @@ class HashTable
 	public boolean add(Object elem)
 	{
 		
-		// TODO
-		int hc = elem.hashCode();
-		int hv = hashValue(hc, size);
-		if (arr[hv].contains(elem))
+		Document document = (Document) elem;
+		BigInteger bigInt = document.hashCodeBig();
+		int k = bigInt.mod(BigInteger.valueOf(size)).intValue();
+		if (arr[k].contains(elem))
 		{
 			return false;
 		}
-		if (((double) numElements) / size < maxLoadFactor)
-		{
-			arr[hv].add(elem);
-		}
-		else
+		arr[k].add(elem);
+		elemAmount = +elemAmount;
+		if (elemAmount > (float) size * maxLoadFactor)
 		{
 			doubleArray();
-			hv = hashValue(hc, size);
-			arr[hv].add(elem);
 		}
-		numElements++;
+		
 		return true;
 		
+		// czy to dobrze?
 	}
 	
 	
 	private void doubleArray()
 	{
 		
-		LinkedList arr2[] = new LinkedList[size * 2];
-		for (int i = 0; i < arr2.length; i++)
-		{
-			arr2[i] = new LinkedList<>();
-		}
-		int i, j, idx;
-		Object elem;
-		for (i = 0; i < size; i++)
-		{
-			for (j = 0; j < arr[i].size(); j++)
-			{
-				elem = arr[i].get(j);
-				idx = hashValue(elem.hashCode(), 2 * size);
-				arr2[idx].add(elem);
-			}
-		}
-		arr = null;
 		size = size * 2;
+		elemAmount = 0;
+		LinkedList[] temp = arr;
 		arr = new LinkedList[size];
-		for (i = 0; i < arr.length; i++)
+		
+		int x = 0;
+		while (x < size)
 		{
-			arr[i] = new LinkedList<>();
+			arr[x] = new LinkedList<E>();
+			x++;
 		}
-		for (i = 0; i < size; i++)
+		for (LinkedList y : temp)
 		{
-			for (j = 0; j < arr2[i].size(); j++)
+			for (Object obj : y)
 			{
-				elem = arr2[i].get(j);
-				arr[i].add(elem);
+				add(obj);
 			}
 		}
-		arr2 = null;
 		
 	}
 	
@@ -164,30 +142,19 @@ class HashTable
 	public String toString()
 	{
 		
-		// TODO
-		// use IWithName x=(IWithName)elem;
-		String res = "";
-		int i, j;
-		for (i = 0; i < arr.length; i++)
+		String string = "";
+		for (int x = 0; x < size; x++)
 		{
-			res += (i + ":");
-			if (arr[i].size() == 0)
+			string += x + ":";
+			Iterator it = arr[x].iterator();
+			if (it.hasNext())
 			{
-				res += "\n";
+				string += " " + ((Document) it.next()).getName();
+				while (it.hasNext()) string += ", " + ((Document) it.next()).getName();
 			}
-			else
-			{
-				res += " ";
-				res += ((IWithName) arr[i].get(0)).getName();
-				for (j = 1; j < arr[i].size(); j++)
-				{
-					res += ", ";
-					res += ((IWithName) arr[i].get(j)).getName();
-				}
-				res += "\n";
-			}
+			string += "\n";
 		}
-		return res;
+		return string;
 		
 	}
 	
@@ -195,20 +162,27 @@ class HashTable
 	public Object get(Object toFind)
 	{
 		
-		// TODO
-		int hc = hashValue(toFind.hashCode(), size);
-		if (!(arr[hc].contains(toFind)))
-		{
-			return null;
-		}
-		for (int i = 0; i < arr[hc].size(); i++)
-		{
-			if (arr[hc].get(i).equals(toFind))
-			{
-				return arr[hc].get(i);
-			}
-		}
+		Document doc = (Document) toFind;
+		BigInteger bigKey = doc.hashCodeBig();
+		int key = bigKey.mod(BigInteger.valueOf(size)).intValue();
+		for (Object x : arr[key]) if (x.equals(toFind)) return x;
 		return null;
+		
+	}
+	
+	
+	private int hash(int key)
+	{
+		
+		return key % size;
+		
+	}
+	
+	
+	private int hashValue(BigInteger hc, int size)
+	{
+		
+		return hc.mod(BigInteger.valueOf(size)).intValue();
 		
 	}
 	
@@ -223,9 +197,7 @@ class TwoWayCycledOrderedListWithSentinel<E> implements IList<E>
 		public Element(E e)
 		{
 			
-			this.object = e;
-			this.next = this;
-			this.prev = this;
+			object = e;
 			
 		}
 		
@@ -233,9 +205,9 @@ class TwoWayCycledOrderedListWithSentinel<E> implements IList<E>
 		public Element(E e, Element next, Element prev)
 		{
 			
-			this.object = e;
-			this.next = next;
+			object = e;
 			this.prev = prev;
+			this.next = next;
 			
 		}
 		
@@ -244,20 +216,33 @@ class TwoWayCycledOrderedListWithSentinel<E> implements IList<E>
 		public void addAfter(Element elem)
 		{
 			
-			elem.next = this.next;
+			Element currElem = next;
+			next = elem;
 			elem.prev = this;
-			this.next.prev = elem;
-			this.next = elem;
+			currElem.prev = elem;
+			elem.next = currElem;
 			
 		}
 		
 		
-		// assert it is NOT a last element in a list
-		public void remove()
+		// assert it is NOT a sentinel
+		public E remove()
 		{
 			
-			this.next.prev = this.prev;
-			this.prev.next = this.next;
+			if (object == null)
+			{
+				throw new NoSuchElementException("can't remove sentinel / element with null object");
+			}
+			if (next != null)
+			{
+				next.prev = prev;
+			}
+			if (prev != null)
+			{
+				prev.next = next;
+			}
+			
+			return object;
 			
 		}
 		
@@ -273,14 +258,12 @@ class TwoWayCycledOrderedListWithSentinel<E> implements IList<E>
 	private class InnerIterator implements Iterator<E>
 	{
 		
-		Element p;
-		int pos = 0;
+		Element currElem;
 		
 		public InnerIterator()
 		{
 			
-			pos = 0;
-			p = sentinel.next;
+			currElem = sentinel;
 			
 		}
 		
@@ -289,7 +272,7 @@ class TwoWayCycledOrderedListWithSentinel<E> implements IList<E>
 		public boolean hasNext()
 		{
 			
-			return pos < size;
+			return currElem.next != sentinel;
 			
 		}
 		
@@ -298,10 +281,16 @@ class TwoWayCycledOrderedListWithSentinel<E> implements IList<E>
 		public E next()
 		{
 			
-			E elem = p.object;
-			p = p.next;
-			pos++;
-			return elem;
+			if (!hasNext())
+			{
+				throw new NoSuchElementException();
+				
+			}
+			else
+			{
+				currElem = currElem.next;
+				return currElem.object;
+			}
 			
 		}
 		
@@ -310,14 +299,12 @@ class TwoWayCycledOrderedListWithSentinel<E> implements IList<E>
 	private class InnerListIterator implements ListIterator<E>
 	{
 		
-		Element p;
-		int pos = 0;
+		Element currElem;
 		
 		public InnerListIterator()
 		{
 			
-			pos = 0;
-			p = sentinel.next;
+			currElem = sentinel;
 			
 		}
 		
@@ -326,7 +313,7 @@ class TwoWayCycledOrderedListWithSentinel<E> implements IList<E>
 		public boolean hasNext()
 		{
 			
-			return pos < size;
+			return currElem.next != sentinel;
 			
 		}
 		
@@ -335,10 +322,16 @@ class TwoWayCycledOrderedListWithSentinel<E> implements IList<E>
 		public E next()
 		{
 			
-			E elem = p.object;
-			p = p.next;
-			pos++;
-			return elem;
+			if (!hasNext())
+			{
+				throw new NoSuchElementException();
+				
+			}
+			else
+			{
+				currElem = currElem.next;
+				return currElem.object;
+			}
 			
 		}
 		
@@ -356,7 +349,7 @@ class TwoWayCycledOrderedListWithSentinel<E> implements IList<E>
 		public boolean hasPrevious()
 		{
 			
-			return pos > 0;
+			return !isEmpty();
 			
 		}
 		
@@ -374,9 +367,17 @@ class TwoWayCycledOrderedListWithSentinel<E> implements IList<E>
 		public E previous()
 		{
 			
-			pos--;
-			p = p.prev;
-			return p.object;
+			if (!hasPrevious())
+			{
+				throw new NoSuchElementException();
+				
+			}
+			else
+			{
+				currElem = currElem.prev;
+				
+			}
+			return currElem.object;
 			
 		}
 		
@@ -413,8 +414,7 @@ class TwoWayCycledOrderedListWithSentinel<E> implements IList<E>
 	{
 		
 		sentinel = new Element(null);
-		sentinel.next = sentinel;
-		sentinel.prev = sentinel;
+		sentinel.prev = sentinel.next = sentinel;
 		
 	}
 	
@@ -424,10 +424,31 @@ class TwoWayCycledOrderedListWithSentinel<E> implements IList<E>
 	public boolean add(E e)
 	{
 		
-		Element p = sentinel.next;
-		while (p != sentinel && ((Comparable<E>) p.object).compareTo(e) <= 0) p = p.next;
-		p.prev.addAfter(new Element(e));
-		size++;
+		if (isEmpty())
+		{
+			sentinel.next = sentinel.prev = new Element(e, sentinel, sentinel);
+			return true;
+		}
+		else if (e instanceof Comparable)
+		{
+			
+			Element element = sentinel.next;
+			int x = 0;
+			while (x < size())
+			
+			{
+				
+				if (((Comparable<E>) element.object).compareTo(e) > 0)
+				{
+					element.prev.addAfter(new Element(e));
+					return true;
+				}
+				element = element.next;
+				x++;
+			}
+			
+		}
+		sentinel.prev.addAfter(new Element(e));
 		return true;
 		
 	}
@@ -436,28 +457,29 @@ class TwoWayCycledOrderedListWithSentinel<E> implements IList<E>
 	private Element getElement(int index)
 	{
 		
-		checkIndex(index);
-		Element p = sentinel.next;
-		while (index > 0)
+		Element elem = sentinel.next;
+		
+		int x = 0;
+		while (elem != sentinel && x <= index)
 		{
-			index--;
-			p = p.next;
+			
+			if (x == index)
+			{
+				return elem;
+			}
+			x++;
+			elem = elem.next;
 		}
-		return p;
+		throw new NoSuchElementException();
 		
 	}
 	
 	
+	@SuppressWarnings("unused")
 	private Element getElement(E obj)
 	{
 		
-		Element p = sentinel.next;
-		while (p != sentinel)
-		{
-			if (p.object.equals(obj)) return p;
-			p = p.next;
-		}
-		return null;
+		return getElement(indexOf(obj));
 		
 	}
 	
@@ -471,21 +493,11 @@ class TwoWayCycledOrderedListWithSentinel<E> implements IList<E>
 	}
 	
 	
-	private void checkIndex(int index)
-	{
-		
-		if (index < 0 || index >= size) throw new NoSuchElementException();
-		
-	}
-	
-	
 	@Override
 	public void clear()
 	{
 		
-		sentinel.next = sentinel;
-		sentinel.prev = sentinel;
-		size = 0;
+		sentinel.next = sentinel.prev = sentinel;
 		
 	}
 	
@@ -494,7 +506,16 @@ class TwoWayCycledOrderedListWithSentinel<E> implements IList<E>
 	public boolean contains(E element)
 	{
 		
-		return indexOf(element) != -1;
+		Element element1 = sentinel.next;
+		while (element1 != sentinel)
+		{
+			if (element1.object.equals(element))
+			{
+				return true;
+			}
+			element1 = element1.next;
+		}
+		return false;
 		
 	}
 	
@@ -521,17 +542,16 @@ class TwoWayCycledOrderedListWithSentinel<E> implements IList<E>
 	public int indexOf(E element)
 	{
 		
-		Element p = sentinel.next;
-		int counter = 0;
-		counter++;
-		while (p != sentinel)
+		Iterator<E> iterator = iterator();
+		int x = 0;
+		while (x < size())
 		{
-			if (p.object.equals(element)) return counter;
-			else
+			
+			if (iterator.next().equals(element))
 			{
-				counter++;
-				p = p.next;
+				return x;
 			}
+			x++;
 		}
 		return -1;
 		
@@ -569,11 +589,20 @@ class TwoWayCycledOrderedListWithSentinel<E> implements IList<E>
 	public E remove(int index)
 	{
 		
-		Element p = getElement(index);
-		E retValue = p.object;
-		p.remove();
-		size--;
-		return retValue;
+		Element element = sentinel.next;
+		
+		int x = 0;
+		while (x <= index && element != sentinel)
+		{
+			if (x == index)
+			{
+				return element.remove();
+			}
+			
+			x++;
+			element = element.next;
+		}
+		throw new NoSuchElementException();
 		
 	}
 	
@@ -582,11 +611,15 @@ class TwoWayCycledOrderedListWithSentinel<E> implements IList<E>
 	public boolean remove(E e)
 	{
 		
-		Element p = getElement(e);
-		if (p == null) return false;
-		p.remove();
-		size--;
-		return true;
+		try
+		{
+			remove(indexOf(e));
+			return true;
+		}
+		catch (NoSuchElementException ex)
+		{
+			return false;
+		}
 		
 	}
 	
@@ -595,79 +628,64 @@ class TwoWayCycledOrderedListWithSentinel<E> implements IList<E>
 	public int size()
 	{
 		
-		return size;
+		int x = 0;
+		Element element = sentinel.next;
+		
+		while (element != sentinel)
+		{
+			x++;
+			element = element.next;
+		}
+		return x;
 		
 	}
 	
 	
-	public String toStringReverse()
+	@Override
+	public boolean equals(Object other)
 	{
 		
-		// TODO
-		ListIterator<E> iter = new InnerListIterator();
-		while (iter.hasNext()) iter.next();
-		String retStr = "";
-		while (iter.hasPrevious()) retStr += "\n" + iter.previous().toString();
-		return retStr;
+		return toString().contentEquals(other.toString());
 		
 	}
 	
 	
-	@SuppressWarnings("unchecked")
 	public void add(TwoWayCycledOrderedListWithSentinel<E> other)
 	{
 		
-		if (this == other) return;
-		if (other.isEmpty()) return;
-		// this empty, but other not
-		if (isEmpty())
+		if (!equals(other))
 		{
-			sentinel.next = other.sentinel.next;
-			sentinel.prev = other.sentinel.prev;
-			size = other.size;
-			other.clear();
-		}
-		// both not empty
-		else
-		{
-			Element p1 = sentinel.next;
-			Element p2 = other.sentinel.next;
-			while (p1 != sentinel && p2 != other.sentinel)
+			while (other.size() > 0)
 			{
-				if (((Comparable<E>) p1.object).compareTo(p2.object) <= 0)
-				{
-					p1 = p1.next;
-				}
-				else
-				{
-					p2 = p2.next;
-					p1.prev.addAfter(p2.prev);
-				}
+				add(other.remove(0));
 			}
-			while (p2 != other.sentinel)
-			{
-				p2 = p2.next;
-				p1.prev.addAfter(p2.prev);
-			}
-			size += other.size;
-			other.clear();
+			
 		}
 		
 	}
 	
 	
-	@SuppressWarnings({"unchecked", "rawtypes" })
 	public void removeAll(E e)
 	{
 		
-		Element p = getElement(e);
-		if (p == null) return;
-		while (p != sentinel && ((Comparable) p.object).compareTo(e) == 0)
+		while (remove(e));
+		
+	}
+	
+	
+	@Override
+	public String toString()
+	{
+		
+		String string = "";
+		Iterator<E> iterator = iterator();
+		int x = 0;
+		while (x < size())
 		{
-			p.remove();
-			p = p.next;
-			size--;
+			string += "\n" + iterator.next();
+			x++;
 		}
+		return string;
 		
 	}
 	
@@ -697,11 +715,19 @@ class Link implements Comparable<Link>
 	}
 	
 	
+	public int getWeight()
+	{
+		
+		return weight;
+		
+	}
+	
+	
 	@Override
 	public boolean equals(Object obj)
 	{
 		
-		return ((Link) obj).ref.equalsIgnoreCase(ref);
+		return obj instanceof Link && ref.contentEquals(((Link) obj).ref);
 		
 	}
 	
@@ -730,11 +756,15 @@ class Document implements IWithName
 	
 	public String name;
 	public TwoWayCycledOrderedListWithSentinel<Link> link;
+	final static Pattern regex = Pattern.compile("(link=)(?<ref>[a-z][\\w_]*)(\\((?<number>[0-9-]*)\\))?$");
+	final static Pattern docName = Pattern.compile("^[a-z].*$");
 	
 	public Document(String name)
 	{
 		
-		this.name = name;
+		// TODO
+		this.name = name.toLowerCase();
+		link = new TwoWayCycledOrderedListWithSentinel<Link>();
 		
 	}
 	
@@ -752,6 +782,7 @@ class Document implements IWithName
 	public void load(Scanner scan)
 	{
 		
+		// TODO
 		String marker = "link=";
 		String endMarker = "eod";
 		String line = scan.nextLine().toLowerCase();
@@ -805,7 +836,7 @@ class Document implements IWithName
 	
 	// accepted only small letters, capitalic letter, digits nad '_' (but not on the
 	// begin)
-	public static Link createLink(String link)
+	static Link createLink(String link)
 	{
 		
 		if (link.length() == 0) return null;
@@ -849,33 +880,6 @@ class Document implements IWithName
 	}
 	
 	
-	public String toStringReverse()
-	{
-		
-		String retStr = "Document: " + name;
-		int counter = 0;
-		ListIterator<Link> iter = link.listIterator();
-		while (iter.hasNext()) iter.next();
-		while (iter.hasPrevious())
-		{
-			if (counter % 10 == 0) retStr += "\n";
-			else retStr += " ";
-			retStr += iter.previous().toString();
-			counter++;
-		}
-		return retStr;
-		
-	}
-	
-	
-	public String getName()
-	{
-		
-		return name;
-		
-	}
-	
-	
 	@Override
 	public boolean equals(Object other)
 	{
@@ -899,6 +903,272 @@ class Document implements IWithName
 			key += (int) name[x];
 		}
 		return (int) key;
+		
+	}
+	
+	
+	public BigInteger hashCodeBig()
+	{
+		
+		int[] multValues = {7, 11, 13, 17, 19 };
+		char[] name = this.name.toCharArray();
+		BigInteger key = BigInteger.ZERO;
+		if (name.length >= 1) key = BigInteger.valueOf((int) name[0]);
+		for (int x = 1, n = 0; x < name.length; x++, n++)
+		{
+			key = key.multiply(BigInteger.valueOf(multValues[n % 5]));
+			key = key.add(BigInteger.valueOf((int) name[x]));
+		}
+		return key;
+		
+	}
+	
+	
+	public String getName()
+	{
+		
+		return name;
+		
+	}
+	
+	
+	public String toStringReverse()
+	{
+		
+		String retStr = "Document: " + name;
+		int counter = 0;
+		ListIterator<Link> iter = link.listIterator();
+		while (iter.hasNext()) iter.next();
+		while (iter.hasPrevious())
+		{
+			if (counter % 10 == 0) retStr += "\n";
+			else retStr += " ";
+			retStr += iter.previous().toString();
+			counter++;
+		}
+		return retStr;
+		
+	}
+	
+	
+	public int[] getWeights()
+	{
+		
+		int[] arr = new int[link.size()];
+		int i = 0;
+		for (Link linkElem : link)
+		{
+			arr[i++] = linkElem.weight;
+		}
+		return arr;
+		
+	}
+	
+	
+	public static void showArray(int[] arr)
+	{
+		
+		if (arr.length > 0)
+		{
+			System.out.print(arr[0]);
+			for (int i = 1; i < arr.length; i++) System.out.print(" " + arr[i]);
+		}
+		System.out.println();
+		
+	}
+	
+	
+	void bubbleSort(int[] arr)
+	{
+		
+		showArray(arr);
+		for (int begin = 0; begin < arr.length - 1; begin++)
+		{
+			for (int j = arr.length - 1; j > begin; j--) if (arr[j - 1] > arr[j]) swap(arr, j - 1, j);
+			showArray(arr);
+		}
+		
+	}
+	
+	
+	void a(int[] arr)
+	{
+		
+		int begining = 0;
+		while (begining < arr.length - 1)
+		{
+			begining++;
+			int num = arr.length;
+			while (num > begining)
+			{
+				num--;
+				if (arr[num - 1] > arr[num])
+				{
+					swap(arr, num - 1, num);
+				}
+			}
+		}
+		
+	}
+	
+	
+	private void swap(int[] arr, int i, int j)
+	{
+		
+		int tmp = arr[i];
+		arr[i] = arr[j];
+		arr[j] = tmp;
+		
+	}
+	
+	
+	public void insertSort(int[] arr)
+	{
+		
+		showArray(arr);
+		for (int pos = arr.length - 2; pos >= 0; pos--)
+		{
+			int value = arr[pos];
+			int i = pos + 1;
+			while (i < arr.length && value > arr[i])
+			{
+				arr[i - 1] = arr[i];
+				i++;
+			}
+			arr[i - 1] = value;
+			showArray(arr);
+		}
+		
+	}
+	
+	
+	public void selectSort(int[] arr)
+	{
+		
+		showArray(arr);
+		for (int border = arr.length; border > 1; border--)
+		{
+			int maxPos = 0;
+			for (int pos = 0; pos < border; pos++) if (arr[maxPos] < arr[pos]) maxPos = pos;
+			swap(arr, border - 1, maxPos);
+			showArray(arr);
+		}
+		
+	}
+	
+	
+	private static int[] mergeSort(int[] arr, int[] arrL, int[] arrR, int leftFirst)
+	{
+		
+		// MergeSorting arrays
+		int leftPos = 0;
+		int rightPos = 0;
+		while (leftPos < arrL.length && rightPos < arrR.length)
+		{
+			if (arrL[leftPos] < arrR[rightPos]) arr[leftFirst++] = arrL[leftPos++];
+			else arr[leftFirst++] = arrR[rightPos++];
+		}
+		
+		while (leftPos < arrL.length)
+		{
+			arr[leftFirst++] = arrL[leftPos++];
+		}
+		while (rightPos < arrR.length)
+		{
+			arr[leftFirst++] = arrR[rightPos++];
+		}
+		return arr;
+		
+	}
+	
+	
+	public static void iterativeMergeSort(int[] arr)
+	{
+		
+		showArray(arr);
+		
+		for (int size = 1; size < arr.length; size *= 2)
+		{
+			
+			for (int LeftBeggining = 0; LeftBeggining < arr.length; LeftBeggining += 2 * size)
+			{
+				
+				int LeftEnding = (LeftBeggining + size < arr.length ? LeftBeggining + size : arr.length) - 1;
+				int RigthEnding = (LeftBeggining + 2 * size < arr.length ? LeftBeggining + 2 * size : arr.length) - 1;
+				
+				int[] arrL = new int[LeftEnding - LeftBeggining + 1];
+				int[] arrR = new int[RigthEnding - LeftEnding];
+				int x = 0;
+				while (x < arrL.length)
+				{
+					
+					arrL[x] = arr[LeftBeggining + x];
+					x++;
+				}
+				int y = 0;
+				while (y < arrR.length)
+				{
+					
+					arrR[y] = arr[LeftEnding + y + 1];
+					y++;
+				}
+				arr = mergeSort(arr, arrL, arrR, LeftBeggining);
+			}
+			showArray(arr);
+		}
+		
+	}
+	
+	
+	public static void radixSort(int[] arr)
+	{
+		
+		showArray(arr);
+		
+		int[] numArray = new int[arr.length];
+		// last
+		int i = 0;
+		while (i < numArray.length)
+		{
+			
+			numArray[i] = arr[i] % 10;
+			i++;
+		}
+		arr = countSort(arr, numArray);
+		showArray(arr);
+		// middle
+		int x = 0;
+		while (x < numArray.length)
+		{
+			
+			numArray[x] = (arr[x] / 10) % 10;
+			x++;
+		}
+		arr = countSort(arr, numArray);
+		showArray(arr);
+		// first
+		int y = 0;
+		
+		while (y < numArray.length)
+		{
+			numArray[y] = arr[y] / 100;
+			y++;
+		}
+		arr = countSort(arr, numArray);
+		showArray(arr);
+		
+	}
+	
+	
+	public static int[] countSort(int[] arr, int[] numArray)
+	{
+		
+		int[] count = new int[10];
+		for (int x : numArray) count[x]++;
+		for (int x = 1; x < 10; x++) count[x] += count[x - 1];
+		int[] newArr = new int[numArray.length];
+		for (int x = arr.length - 1; x >= 0; x--) newArr[count[numArray[x]]-- - 1] = arr[x];
+		return newArr;
 		
 	}
 	
