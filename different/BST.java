@@ -1,9 +1,19 @@
 package different;
 
-import java.util.LinkedList;
-
 public class BST<T extends Comparable<T>>
 {
+	
+	public static void main(String[] args)
+	{
+		
+		BST bst = new BST();
+		bst.add(5);
+		bst.add(3);
+		bst.add(6);
+		System.out.println(bst.remove(5));
+		System.out.println(bst.toStringInOrder());
+		
+	}
 	
 	private class Node
 	{
@@ -32,38 +42,24 @@ public class BST<T extends Comparable<T>>
 		
 	}
 	
-	public Node root = null; // ch pr-pub
-	public int size;
-	private LinkedList<T> output;
-	// private final Comparator<T> comparator;
+	private Node root = null;
 	
-	/*
-	 * public BST(Comparator<T> comp){ comparator=comp; root=null; }
-	 */
-	public Node getNode(T toFind)
+	public BST()
 	{
 		
-		if (size == 0)
-		{ // null?
-			return null;
-		}
-		Node curNode = root;
-		while (curNode != null)
+	}
+	
+	
+	public T getElemNode(Node current, T toFind)
+	{
+		
+		if (current == null) return null;
+		if (current.value.compareTo(toFind) == 0) return current.value;
+		if (current.value.compareTo(toFind) > 0) return getElemNode(current.left, toFind);
+		else
 		{
-			if (toFind.compareTo(curNode.value) == 0)
-			{
-				return curNode;
-			}
-			else if (toFind.compareTo(curNode.value) < 0)
-			{
-				curNode = curNode.left;
-			}
-			else
-			{ // >=
-				curNode = curNode.right;
-			}
+			return getElemNode(current.right, toFind);
 		}
-		return null;
 		
 	}
 	
@@ -71,48 +67,77 @@ public class BST<T extends Comparable<T>>
 	public T getElement(T toFind)
 	{
 		
-		return (getNode(toFind) == null) ? null : getNode(toFind).value;
+		// TODO
+		return getElemNode(root, toFind);
 		
 	}
 	
 	
-	public Node successorNode(T elem)
+	private T findSuccessor(Node root, Node succ, T key)
 	{
 		
-		if (size == 0 || size == 1)
+		// base case
+		if (root == null)
 		{
 			return null;
 		}
-		Node curNode = getNode(elem);
-		if (curNode == null)
-		{
-			return null;
-		}
-		if (curNode.right != null)
-		{
-			curNode = curNode.right;
-			while (curNode.left != null)
-			{
-				curNode = curNode.left;
-			}
-			return curNode;
-		}
-		Node parent = curNode.parent;
-		while (parent != null && curNode == parent.right)
-		{
-			curNode = parent;
-			parent = parent.parent;
-		}
-		return parent;
 		
-		// return (parent==null)?null:parent;
+		// if node with key's value is found, the successor is minimum
+		// value node in its right subtree (if any)
+		if (root.value.compareTo(key) == 0)
+		{
+			if (root.right != null)
+			{
+				return minValue(root.right);
+			}
+		}
+		
+		// if given key is less than the root node, recur for left subtree
+		else if (root.value.compareTo(key) > 0)
+		{
+			// update successor to current node before recursing in
+			// left subtree
+			succ = root;
+			return findSuccessor(root.left, succ, key);
+		}
+		
+		// if given key is more than the root node, recur for right subtree
+		else
+		{
+			return findSuccessor(root.right, succ, key);
+		}
+		
+		return succ.value;
+		
 	}
 	
 	
 	public T successor(T elem)
 	{
 		
-		return (successorNode(elem) == null) ? null : successorNode(elem).value;
+		// TODO
+		return findSuccessor(root, null, elem);
+		
+	}
+	
+	
+	private String removeComma(String string)
+	{
+		
+		if (string.length() < 2) return string;
+		return string.substring(0, string.length() - 2);
+		
+	}
+	
+	
+	private String inOrder(Node current)
+	{
+		
+		if (current == null)
+		{
+			return "";
+		}
+		return inOrder(current.left) + current.value.toString() + ", " + inOrder(current.right);
 		
 	}
 	
@@ -120,35 +145,20 @@ public class BST<T extends Comparable<T>>
 	public String toStringInOrder()
 	{
 		
-		String retStr = "";
-		output = new LinkedList<T>();
-		inOrder(root);
-		if (output.size() == 0)
-		{
-			return retStr;
-		}
-		for (T node : output)
-		{
-			
-			retStr += node.toString();
-			retStr += ", ";
-		}
-		retStr = retStr.substring(0, retStr.length() - 2);
-		return retStr;
+		// TODO
+		return removeComma(inOrder(root));
 		
 	}
 	
 	
-	public void inOrder(Node node)
+	private String preOrder(Node current)
 	{
 		
-		if (node == null)
+		if (current == null)
 		{
-			return;
+			return "";
 		}
-		inOrder(node.left);
-		output.add(node.value);
-		inOrder(node.right);
+		return current.value.toString() + ", " + preOrder(current.left) + preOrder(current.right);
 		
 	}
 	
@@ -156,34 +166,20 @@ public class BST<T extends Comparable<T>>
 	public String toStringPreOrder()
 	{
 		
-		String retStr = "";
-		output = new LinkedList<T>();
-		preOrder(root);
-		if (output.size() == 0)
-		{
-			return retStr;
-		}
-		for (T node : output)
-		{
-			retStr += node.toString();
-			retStr += ", ";
-		}
-		retStr = retStr.substring(0, retStr.length() - 2);
-		return retStr;
+		// TODO
+		return removeComma(preOrder(root));
 		
 	}
 	
 	
-	public void preOrder(Node node)
+	private String postOrder(Node current)
 	{
 		
-		if (node == null)
+		if (current == null)
 		{
-			return;
+			return "";
 		}
-		output.add(node.value);
-		preOrder(node.left);
-		preOrder(node.right);
+		return postOrder(current.left) + postOrder(current.right) + current.value.toString() + ", ";
 		
 	}
 	
@@ -191,79 +187,96 @@ public class BST<T extends Comparable<T>>
 	public String toStringPostOrder()
 	{
 		
-		String retStr = "";
-		output = new LinkedList<T>();
-		postOrder(root);
-		if (output.size() == 0)
-		{
-			return retStr;
-		}
-		for (T node : output)
-		{
-			retStr += node.toString();
-			retStr += ", ";
-		}
-		retStr = retStr.substring(0, retStr.length() - 2);
-		return retStr;
-		
-	}
-	
-	
-	public void postOrder(Node node)
-	{
-		
-		if (node == null)
-		{
-			return;
-		}
-		postOrder(node.left);
-		postOrder(node.right);
-		output.add(node.value);
+		// TODO
+		return removeComma(postOrder(root));
 		
 	}
 	
 	
 	public boolean add(T elem)
-	{ // exception?
+	{
 		
+		return add(root, elem);
+		
+	}
+	
+	
+	@SuppressWarnings("unchecked")
+	private boolean add(Node startNode, T elem)
+	{
+		
+		Node currNode = null;
+		Node root = startNode;
 		Node newNode = new Node(elem);
-		if (size == 0)
-		{
-			root = newNode;
-			size++;
-			return true;
-		}
-		Node temp = null;
-		Node curNode = root;
-		while (curNode != null)
-		{
-			temp = curNode;
-			if (newNode.value.compareTo(curNode.value) < 0)
-			{
-				curNode = curNode.left;
-			}
-			else
-			{ // >=
-				curNode = curNode.right;
-			}
-		}
-		if (newNode.value.equals(temp.value))
-		{
-			// temp.value=newNode.value;
-			return false; // without ch size or excep
-		}
-		newNode.parent = temp;
 		
-		if (newNode.value.compareTo(temp.value) < 0)
+		while (root != null)
 		{
-			temp.left = newNode;
+			currNode = root;
+			if (((Comparable<T>) newNode.value).compareTo(root.value) < 0) root = root.left;
+			else if (((Comparable<T>) newNode.value).compareTo(root.value) > 0) root = root.right;
+			else return false;
 		}
-		else if (newNode.value.compareTo(temp.value) > 0)
-		{
-			temp.right = newNode;
-		}
-		size++;
+		
+		newNode.parent = currNode;
+		if (currNode == null) this.root = newNode;
+		else if (((Comparable) newNode.value).compareTo(currNode.value) < 0) currNode.left = newNode;
+		else if (((Comparable) newNode.value).compareTo(currNode.value) > 0) currNode.right = newNode;
+		else return false;
 		return true;
+		
+	}
+	
+	
+	private T minValue(Node current)
+	{
+		
+		T minv = current.value;
+		while (current.left != null)
+		{
+			minv = current.left.value;
+			current = current.left;
+		}
+		return minv;
+		
+	}
+	
+	
+	private Node removeRecursive(Node current, T elem)
+	{
+		
+		{
+			/* Base Case: If the tree is empty */
+			if (current == null) return current;
+			/* Otherwise, recur down the tree */
+			if (elem.compareTo(current.value) < 0) current.left = removeRecursive(current.left, elem);
+			else if (elem.compareTo(current.value) > 0) current.right = removeRecursive(current.right, elem);
+			
+			// if key is same as root's key, then This is the node
+			// to be deleted
+			else
+			{
+				// node with only one child or no child
+				if (current.left == null)
+				{
+					if (current.right != null) current.right.parent = current.parent;
+					return current.right;
+				}
+				
+				else if (current.right == null)
+				{
+					if (current.left != null) current.left.parent = current.parent;
+					
+				}
+				// node with two children: Get the inorder successor (smallest
+				// in the right subtree)
+				current.value = minValue(current.right);
+				
+				// Delete the inorder successor
+				current.right = removeRecursive(current.right, current.value);
+			}
+			
+			return current;
+		}
 		
 	}
 	
@@ -271,99 +284,30 @@ public class BST<T extends Comparable<T>>
 	public T remove(T value)
 	{
 		
-		if (size == 1)
-		{
-			clear();
-			return value;
-		}
-		Node toRemove = getNode(value);
-		
-		if (toRemove == null || value == null)
-		{
-			return null;
-		}
-		T retValue = toRemove.value;
-		root = remove(root, value);
-		size--;
-		return retValue;
+		T temp = getElement(value);
+		root = removeRecursive(root, value);
+		return temp;
 		
 	}
 	
 	
-	public Node remove(Node node, T value)
-	{
-		
-		if (value.compareTo(node.value) < 0)
-		{ // node to delete is in left subtree
-			node.left = remove(node.left, value);
-		}
-		else if (value.compareTo(node.value) > 0)
-		{ // node to delete is in right subtree
-			node.right = remove(node.right, value);
-		}
-		else
-		{ // node to delete is a root
-			if (node.left == null && node.right == null)
-			{ // node to delete is a leaf
-				// removeLeaf(node);
-				node = null;
-				return node;
-			}
-			
-			if (node.left == null && node.right != null)
-			{ // root without left subtree
-				return node.right;
-			}
-			else if (node.right == null && node.left != null)
-			{ // root without right subtree
-				return node.left;
-			}
-			else
-			{
-				T inOrderSuccessor = successor(node.value); // root with both subtree
-				node.value = inOrderSuccessor;
-				node.right = remove(node.right, node.value);
-			}
-		}
-		return node;
-		
-	}
-	
-	
-	/*
-	 * public T remove(Node node,T value) { if(size==1) { clear(); return value; }
-	 * Node toRemove=getNode(value); if(toRemove==null || value==null) { return
-	 * null; }
-	 * 
-	 * T retValue=toRemove.value; if(toRemove.left==null && toRemove.right==null) {
-	 * //0 removeLeaf(toRemove); size--; return retValue; } if(toRemove.left==null
-	 * && toRemove.right!=null) { //1 r if (toRemove.parent==null){
-	 * root=toRemove.right; } else { toRemove.right.parent=toRemove.parent;
-	 * if(toRemove.value.compareTo(toRemove.parent.value)<0) {
-	 * toRemove.parent.left=toRemove.right;
-	 * 
-	 * } else { toRemove.parent.right=toRemove.right; } } } else
-	 * if(toRemove.right==null && toRemove.left!=null) { //1 l if
-	 * (toRemove.parent==null){ root=toRemove.left; } else {
-	 * toRemove.left.parent=toRemove.parent;
-	 * if(toRemove.value.compareTo(toRemove.parent.value)>0) {
-	 * toRemove.parent.right=toRemove.left; } else {
-	 * toRemove.parent.left=toRemove.left; } } } else { Node
-	 * succ=successorNode(value); //2 toRemove.value=succ.value; remove(succ.value);
-	 * // removeLeaf(succ);
-	 * 
-	 * } size--; return retValue; } public void removeLeaf(Node leaf) {
-	 * if(leaf.value.compareTo(leaf.parent.value)<0) { leaf.parent.left=null; } else
-	 * { leaf.parent.right=null;
-	 * 
-	 * } leaf.parent=null; }
-	 * 
-	 */
 	public void clear()
 	{
 		
+		// TODO
 		root = null;
-		size = 0;
+		
+	}
+	
+	
+	public int sizeNode(Node current)
+	{
+		
+		if (current == null) return 0;
+		else
+		{
+			return 1 + sizeNode(current.left) + sizeNode(current.right);
+		}
 		
 	}
 	
@@ -371,7 +315,8 @@ public class BST<T extends Comparable<T>>
 	public int size()
 	{
 		
-		return size;
+		// TODO
+		return sizeNode(root);
 		
 	}
 	
